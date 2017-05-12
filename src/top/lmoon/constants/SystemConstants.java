@@ -10,6 +10,10 @@ package top.lmoon.constants;
  */
 public class SystemConstants {
 
+	public static final String IP_DEFAULT = "127.0.0.1";
+
+	public static final int PORT_DEFAULT = 11111;
+
 	public static final String LINE_BREAK = "\r\n";
 
 	public static class Symbol {
@@ -34,21 +38,40 @@ public class SystemConstants {
 
 	public static class MsgType {
 
-		public static final int MSG = 1;
+		public static final int SYSTEM = 1;
 
-		public static final int ADD = 2;
-
-		public static final int RED = 3;
-		
-		public static final int ONLINE = 4;
-		
-		public static final int OFFLINE = 5;
-		
-		public static final int SEND = 6;
-		
-		public static final int NOTICE = 7;
+		public static final int USER = 2;
 
 	}
 
+	public static class MsgUserMode {
+
+		public static final int SEND_ONE = 1;
+		
+		public static final int SEND_ALL = 2;
+
+	}
+
+	public static class MsgSysMode {
+
+		public static final int ONLINE = 1;
+
+		public static final int OFFLINE = 2;
+
+		public static final int USERS_SET = 3;
+
+		public static final int NOTICE = 4;
+		
+		public static final int SERVER_OFF = 5;
+		
+		public static final int SERVER_ERROR = 6;
+
+//		public static final int RED = 7;
+
+	}
+	
+	public static class Error{
+		public static final String USERNAME = "用户名非法或已存在！";
+	}
 
 }

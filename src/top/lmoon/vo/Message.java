@@ -4,6 +4,8 @@
 package top.lmoon.vo;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author guozy
@@ -13,30 +15,98 @@ import java.io.Serializable;
 public class Message implements Serializable{
 	
 	private static final long serialVersionUID = -3771284607662403708L;
-
-	private String cmd;
 	
 	private int type;
+	
+	private int mode;
 
 	private String content;
 	
-	private String fromeUser;
+	private String fromUser;
 	
 	private String toUser;
 	
+	private List<String> userList;
 	
-	public Message(String msg){
+	private Map dataMap;
+	
+	public Message(){
 		
 	}
 
+	public Message(int type, int mode) {
+		super();
+		this.type = type;
+		this.mode = mode;
+	}
 
-	public String getCmd() {
-		return cmd;
+	public Message(int type, int mode, String fromUser) {
+		super();
+		this.type = type;
+		this.mode = mode;
+		this.fromUser = fromUser;
+	}
+
+	public Message(int type, int mode, List userList) {
+		super();
+		this.type = type;
+		this.mode = mode;
+		this.userList = userList;
+	}
+
+	public Message(int type, int mode, String content, String fromUser, String toUser, List userList, Map dataMap) {
+		super();
+		this.type = type;
+		this.mode = mode;
+		this.content = content;
+		this.fromUser = fromUser;
+		this.toUser = toUser;
+		this.userList = userList;
+		this.dataMap = dataMap;
+	}
+
+	public Message(int type, int mode, String content, String fromUser, String toUser) {
+		super();
+		this.type = type;
+		this.mode = mode;
+		this.content = content;
+		this.fromUser = fromUser;
+		this.toUser = toUser;
 	}
 
 
-	public void setCmd(String cmd) {
-		this.cmd = cmd;
+	public Message(int type, int mode, String content, String fromUser) {
+		super();
+		this.type = type;
+		this.mode = mode;
+		this.content = content;
+		this.fromUser = fromUser;
+	}
+
+
+	public List<String> getUserList() {
+		return userList;
+	}
+
+	public void setUserList(List<String> userList) {
+		this.userList = userList;
+	}
+
+	public Map getDataMap() {
+		return dataMap;
+	}
+
+	public void setDataMap(Map dataMap) {
+		this.dataMap = dataMap;
+	}
+
+	public int getMode() {
+		return mode;
+	}
+
+
+	public void setMode(int mode) {
+		this.mode = mode;
 	}
 
 
@@ -60,13 +130,13 @@ public class Message implements Serializable{
 	}
 
 
-	public String getFromeUser() {
-		return fromeUser;
+	public String getFromUser() {
+		return fromUser;
 	}
 
 
-	public void setFromeUser(String fromeUser) {
-		this.fromeUser = fromeUser;
+	public void setFromUser(String fromUser) {
+		this.fromUser = fromUser;
 	}
 
 
