@@ -12,13 +12,11 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -63,6 +61,8 @@ public class Server extends JFrame {
 	private ConcurrentMap<String, Socket> usersMap = new ConcurrentHashMap<String, Socket>();
 
 	public Server() {
+		
+		super("闲聊服务器");
 		JPanel p = new JPanel(new BorderLayout());
 		// 最右边的用户在线列表
 		lm = new DefaultListModel<String>();
@@ -181,8 +181,9 @@ public class Server extends JFrame {
 						if (m.getType() == SystemConstants.MsgType.SYSTEM
 								&& m.getMode() == SystemConstants.MsgSysMode.ONLINE) {
 							String userName = m.getFromUser();
-							if(!ValidateUtil.isUserNameForServer(userName, usersMap)){
-								Message errorM = new Message(SystemConstants.MsgType.SYSTEM, SystemConstants.MsgSysMode.SERVER_ERROR, SystemConstants.Error.USERNAME, "");
+							if (!ValidateUtil.isUserNameForServer(userName, usersMap)) {
+								Message errorM = new Message(SystemConstants.MsgType.SYSTEM,
+										SystemConstants.MsgSysMode.SERVER_ERROR, SystemConstants.Error.USERNAME, "");
 								SocketUtil.printWithoutException(socketClient, errorM);
 								continue;
 							}
@@ -193,7 +194,7 @@ public class Server extends JFrame {
 
 							usersMap.put(userName, socketClient);// 把当前登录的用户加到“在线用户”池中
 
-							msgAll(str);// 把“当前用户登录的消息即用户名”通知给所有其他已经在线的人
+							msgAll(str, socketClient);// 把“当前用户登录的消息即用户名”通知给所有其他已经在线的人
 							msgSelf(socketClient);// 通知当前登录的用户，有关其他在线人的信息
 						}
 					}
@@ -225,7 +226,7 @@ public class Server extends JFrame {
 
 					if (m.getType() == SystemConstants.MsgType.USER) {
 						if (m.getMode() == SystemConstants.MsgUserMode.SEND_ONE) {
-							sendMsgToSb(str,m);
+							sendMsgToSb(str, m);
 						} else if (m.getMode() == SystemConstants.MsgUserMode.SEND_ALL) {
 							sendMsgToAll(str);
 						}
@@ -250,7 +251,7 @@ public class Server extends JFrame {
 
 			} catch (IOException e) {
 				e.printStackTrace();
-				logger.error("",e);
+				logger.error("", e);
 			}
 
 		}
@@ -292,15 +293,15 @@ public class Server extends JFrame {
 	}
 
 	// 服务器把客户端的聊天消息转发给相应的其他客户端
-	public void sendMsgToSb(String str,Message m){
+	public void sendMsgToSb(String str, Message m) {
 		Socket s = usersMap.get(m.getToUser());
 		try {
 			SocketUtil.print(s, str);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			area.append("发送消息失败:From【"+m.getFromUser()+"】To【"+m.getToUser()+"】.原因："+e.getMessage());
+			area.append("发送消息失败:From【" + m.getFromUser() + "】To【" + m.getToUser() + "】.原因：" + e.getMessage());
 			e.printStackTrace();
-			logger.error("",e);
+			logger.error("", e);
 		}
 	}
 
@@ -310,11 +311,12 @@ public class Server extends JFrame {
 	 * @param userName
 	 */
 	// 技术思路:从池中依次把每个socket(代表每个在线用户)取出，向它发送userName
-	public void msgAll(String str) {
+	public void msgAll(String str, Socket socket) {
 		Iterator<Socket> it = usersMap.values().iterator();
 		while (it.hasNext()) {
 			Socket s = it.next();
-			SocketUtil.printWithoutException(s, str);
+			if (s!=socket)
+				SocketUtil.printWithoutException(s, str);
 		}
 	}
 
@@ -325,13 +327,13 @@ public class Server extends JFrame {
 	 */
 	// 把原先已经在线的那些用户的名字发给该登录用户，让他给自己界面中的lm添加相应的用户名
 	public void msgSelf(Socket s) {
-		List<String> userList = new ArrayList<String>(usersMap.keySet());
+		List<String> userList = new ArrayList<String>(usersMap.keySet());		
 		Message m = new Message(SystemConstants.MsgType.SYSTEM, SystemConstants.MsgSysMode.USERS_SET, userList);
 		SocketUtil.printWithoutException(s, m);
 	}
 
 	public static void main(String[] args) {
-		JFrame.setDefaultLookAndFeelDecorated(true);// 设置装饰
+//		JFrame.setDefaultLookAndFeelDecorated(true);// 设置装饰
 		new Server();
 	}
 

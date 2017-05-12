@@ -148,6 +148,12 @@ public class Message implements Serializable{
 	public void setToUser(String toUser) {
 		this.toUser = toUser;
 	}
+
+	@Override
+	public String toString() {
+		return "Message [type=" + type + ", mode=" + mode + ", content=" + content + ", fromUser=" + fromUser
+				+ ", toUser=" + toUser + ", userList=" + userList + ", dataMap=" + dataMap + "]";
+	}
 	
 	
 

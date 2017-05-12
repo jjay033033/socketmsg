@@ -11,12 +11,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Scanner;
 
-import javax.print.attribute.standard.MediaSize.ISO;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -60,7 +59,7 @@ public class Client extends JFrame implements ActionListener {
 	private JList<String> list;
 	private DefaultListModel<String> lm;
 	private JTextArea allMsg;
-	private JTextField tfdMsg;
+	private JTextArea tfdMsg;
 	private JButton btnCon;
 	private JButton btnExit;
 	private JButton btnSend;
@@ -74,7 +73,7 @@ public class Client extends JFrame implements ActionListener {
 
 	public Client() {
 
-		super("即时通讯工具1.0");
+		super("闲聊");
 		// 菜单条
 		addJMenu();
 
@@ -127,13 +126,17 @@ public class Client extends JFrame implements ActionListener {
 		// 聊天消息框
 		allMsg = new JTextArea();
 		allMsg.setEditable(false);
+		allMsg.setLineWrap(true);
+		allMsg.setWrapStyleWord(true);
 		cenP.add(new JScrollPane(allMsg), BorderLayout.CENTER);
 
 		// 消息发送面板
 		JPanel p3 = new JPanel();
 		JLabel jlb2 = new JLabel("消息:");
 		p3.add(jlb2);
-		tfdMsg = new JTextField(20);
+		tfdMsg = new JTextArea(2, 20);
+		tfdMsg.setLineWrap(true);
+		tfdMsg.setWrapStyleWord(true);
 		p3.add(tfdMsg);
 		btnSend = new JButton("发送");
 		btnSend.setEnabled(false);
@@ -260,17 +263,14 @@ public class Client extends JFrame implements ActionListener {
 			}
 			userName = tfdUserName.getText();
 			connecting();// 连接服务器的动作
-			if (clientSocket == null||clientSocket.isClosed()) {
+			if (clientSocket == null || clientSocket.isClosed()) {
 				JOptionPane.showMessageDialog(this, "服务器未开启或网络未连接，无法连接！");
 				return;
 			}
-
-			((JButton) (e.getSource())).setEnabled(false);
 			// 获得btnCon按钮--获得源
-			// 相当于btnCon.setEnabled(false);
-			btnExit.setEnabled(true);
-			btnSend.setEnabled(true);
-			tfdUserName.setEditable(false);
+//			((JButton) (e.getSource())).setEnabled(false);
+			
+			
 
 		} else if (e.getActionCommand().equals("send")) {
 			String msgStr = tfdMsg.getText();
@@ -287,7 +287,7 @@ public class Client extends JFrame implements ActionListener {
 			Message m = new Message(SystemConstants.MsgType.USER, mode, msgStr, userName, toUser);
 			try {
 				SocketUtil.print(clientSocket, m);
-				if(mode == SystemConstants.MsgUserMode.SEND_ONE){
+				if (mode == SystemConstants.MsgUserMode.SEND_ONE) {
 					thisMsg = "  我对【" + toUser + "】说: " + msgStr;
 					allMsg.append(thisMsg + SystemConstants.LINE_BREAK);
 				}
@@ -296,10 +296,9 @@ public class Client extends JFrame implements ActionListener {
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
-				logger.error("",e1);
+				logger.error("", e1);
 			}
 
-			
 		} else if (e.getActionCommand().equals("exit")) {
 			sendOffLineMsg();
 			setOffLineState();
@@ -311,16 +310,21 @@ public class Client extends JFrame implements ActionListener {
 		SocketUtil.closeSocket(clientSocket);
 		// 先把自己在线的菜单清空
 		lm.clear();
-		this.setTitle("用户【" + userName + "】离线...");
 		btnCon.setEnabled(true);
 		btnExit.setEnabled(false);
 		tfdUserName.setEditable(true);
+		tfdMsg.setEditable(false);
 		isOnline = false;
+		this.setTitle("闲聊 · 用户【" + userName + "】离线...");
 	}
-	
+
 	private void setOnLineState() {
+		btnCon.setEnabled(false);
+		btnExit.setEnabled(true);
+		btnSend.setEnabled(true);
+		tfdUserName.setEditable(false);
 		isOnline = true;
-		this.setTitle("用户【" + userName + "】在线...");
+		this.setTitle("闲聊 · 用户【" + userName + "】在线...");
 	}
 
 	// 向服务器发送退出消息
@@ -373,8 +377,10 @@ public class Client extends JFrame implements ActionListener {
 						} else if (m.getMode() == SystemConstants.MsgSysMode.USERS_SET) {
 							lm.clear();
 							lm.addElement("全部");
-							SwingUtil.addStr(lm, m.getUserList(),userName);
+							SwingUtil.addStr(lm, m.getUserList(), userName);						
+//							list = new JList<String>( m.getUserList().toArray(new String[10]));
 							list.setSelectedIndex(0);// 设置默认显示
+//							System.out.println(list.getSelectedValue());
 						} else if (m.getMode() == SystemConstants.MsgSysMode.SERVER_OFF) {
 							setOffLineState();
 						} else if (m.getMode() == SystemConstants.MsgSysMode.SERVER_ERROR) {
@@ -399,7 +405,7 @@ public class Client extends JFrame implements ActionListener {
 	}
 
 	public static void main(String[] args) {
-		JFrame.setDefaultLookAndFeelDecorated(true);// 设置装饰
+		// JFrame.setDefaultLookAndFeelDecorated(true);// 设置装饰
 		new Client();
 	}
 

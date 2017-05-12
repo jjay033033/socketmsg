@@ -35,6 +35,7 @@ public class SocketUtil {
 	}
 
 	private static void print(PrintWriter pw, String str) {
+		logger.debug(str);//调试打印信息
 		pw.println(str);
 		pw.flush();
 	}

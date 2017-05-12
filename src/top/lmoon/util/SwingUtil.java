@@ -17,8 +17,11 @@ public class SwingUtil {
 
 	public static void addStr(DefaultListModel<String> lm, List<String> list, String me) {
 		for (String str : list) {
-			if (!str.equals(me))
+			if (!str.equals(me)){
+//				System.out.println("ss:"+str);
 				lm.addElement(str);
+//				System.out.println(lm.toString());
+			}	
 		}
 	}
 
