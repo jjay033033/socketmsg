@@ -56,7 +56,7 @@ public class Client extends JFrame implements ActionListener {
 	protected JList<String> list;
 	protected DefaultListModel<String> lm;
 	protected JTextArea allMsg;
-	private JTextArea tfdMsg;
+	private JTextField tfdMsg;
 	private JButton btnCon;
 	private JButton btnExit;
 	private JButton btnSend;
@@ -138,9 +138,10 @@ public class Client extends JFrame implements ActionListener {
 		JPanel p3 = new JPanel();
 		JLabel jlb2 = new JLabel("消息:");
 		p3.add(jlb2);
-		tfdMsg = new JTextArea(2, 20);
-		tfdMsg.setLineWrap(true);
-		tfdMsg.setWrapStyleWord(true);
+//		tfdMsg = new JTextArea(2, 20);
+//		tfdMsg.setLineWrap(true);
+//		tfdMsg.setWrapStyleWord(true);
+		tfdMsg = new JTextField(20);
 		p3.add(tfdMsg);
 		btnSend = new JButton("发送");
 //		btnSend.setEnabled(false);
