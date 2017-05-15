@@ -13,8 +13,6 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.Scanner;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -37,7 +35,6 @@ import javax.swing.border.TitledBorder;
 import org.apache.log4j.Logger;
 
 import top.lmoon.constants.SystemConstants;
-import top.lmoon.util.MessageUtil;
 import top.lmoon.util.SocketUtil;
 import top.lmoon.util.StringUtil;
 import top.lmoon.util.SwingUtil;
@@ -56,24 +53,34 @@ public class Client extends JFrame implements ActionListener {
 	private static final Logger logger = Logger.getLogger(Client.class);
 
 	private JTextField tfdUserName;
-	private JList<String> list;
-	private DefaultListModel<String> lm;
-	private JTextArea allMsg;
+	protected JList<String> list;
+	protected DefaultListModel<String> lm;
+	protected JTextArea allMsg;
 	private JTextArea tfdMsg;
 	private JButton btnCon;
 	private JButton btnExit;
 	private JButton btnSend;
 
-	private static String HOST = SystemConstants.IP_DEFAULT;// 自己机子，服务器的ip地址
-	private static int PORT = SystemConstants.PORT_DEFAULT;// 服务器的端口号
-	private Socket clientSocket;
-	private static String userName;
+	protected static String HOST = SystemConstants.IP_DEFAULT;// 自己机子，服务器的ip地址
+	protected static int PORT = SystemConstants.PORT_DEFAULT;// 服务器的端口号
+	protected static Socket clientSocket;
+	protected static String userName;
 
 	private static boolean isOnline = false;
+	
+	private static Client instance;
+	
+	public static Client getInstance(){
+		if(instance == null){
+			instance = new Client();
+		}
+		return instance;
+	}
 
-	public Client() {
+	private Client() {
 
 		super("闲聊");
+		
 		// 菜单条
 		addJMenu();
 
@@ -81,8 +88,6 @@ public class Client extends JFrame implements ActionListener {
 		JPanel p = new JPanel();
 		JLabel jlb1 = new JLabel("用户标识:");
 		tfdUserName = new JTextField(10);
-		// tfdUserName.setEnabled(false);//不能选中和修改
-		// dtfdUserName.setEditable(false);//不能修改
 
 		// 链接按钮
 		// ImageIcon icon = new ImageIcon("a.png");
@@ -98,7 +103,6 @@ public class Client extends JFrame implements ActionListener {
 		btnExit.setActionCommand("exit");
 
 		btnExit.addActionListener(this);
-		btnExit.setEnabled(false);
 		p.add(jlb1);
 		p.add(tfdUserName);
 		p.add(btnCon);
@@ -113,7 +117,7 @@ public class Client extends JFrame implements ActionListener {
 		lm = new DefaultListModel<String>();
 		list = new JList<String>(lm);
 		// lm.addElement("全部");
-		// list.setSelectedIndex(0);// 设置默认显示
+		// list.setSelectedIndex(0);// 设置默认显示		
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);// 只能选中一行
 		list.setVisibleRowCount(2);
 		JScrollPane js = new JScrollPane(list);
@@ -125,9 +129,9 @@ public class Client extends JFrame implements ActionListener {
 
 		// 聊天消息框
 		allMsg = new JTextArea();
-		allMsg.setEditable(false);
 		allMsg.setLineWrap(true);
 		allMsg.setWrapStyleWord(true);
+		allMsg.setEditable(false);
 		cenP.add(new JScrollPane(allMsg), BorderLayout.CENTER);
 
 		// 消息发送面板
@@ -139,7 +143,7 @@ public class Client extends JFrame implements ActionListener {
 		tfdMsg.setWrapStyleWord(true);
 		p3.add(tfdMsg);
 		btnSend = new JButton("发送");
-		btnSend.setEnabled(false);
+//		btnSend.setEnabled(false);
 		btnSend.setActionCommand("send");
 		btnSend.addActionListener(this);
 		p3.add(btnSend);
@@ -159,6 +163,7 @@ public class Client extends JFrame implements ActionListener {
 
 		setBounds(300, 300, 400, 300);
 		setVisible(true);
+		setOffLineState();
 	}
 
 	private void addJMenu() {
@@ -172,86 +177,12 @@ public class Client extends JFrame implements ActionListener {
 		JMenuItem menuItemHelp = new JMenuItem("帮助");
 		menu.add(menuItemSet);
 		menu.add(menuItemHelp);
+		
+		ConfigItemListener cil = new ConfigItemListener(Client.this);
+		menuItemSet.addActionListener(cil);
 
-		menuItemSet.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				final JDialog dlg = new JDialog(Client.this);// 弹出一个界面
-				// 不能直接用this
-
-				dlg.setBounds(Client.this.getX() + 20, Client.this.getY() + 30, 350, 150);
-				dlg.setLayout(new FlowLayout());
-				dlg.add(new JLabel("服务器IP和端口:"));
-
-				final JTextField tfdHost = new JTextField(10);
-				tfdHost.setText(Client.HOST);
-				dlg.add(tfdHost);
-
-				dlg.add(new JLabel(":"));
-
-				final JTextField tfdPort = new JTextField(5);
-				tfdPort.setText("" + Client.PORT);
-				dlg.add(tfdPort);
-
-				JButton btnSet = new JButton("设置");
-				dlg.add(btnSet);
-				btnSet.addActionListener(new ActionListener() {
-
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						String ip = tfdHost.getText();// 解析并判断ip是否合法
-						String strs[] = ip.split("\\.");
-						if (strs == null || strs.length != 4) {
-							JOptionPane.showMessageDialog(Client.this, "IP类型有误！");
-							return;
-						}
-						try {
-							for (int i = 0; i < 4; i++) {
-								int num = Integer.parseInt(strs[i]);
-								if (num > 255 || num < 0) {
-									JOptionPane.showMessageDialog(Client.this, "IP类型有误！");
-									return;
-								}
-							}
-						} catch (NumberFormatException e2) {
-							JOptionPane.showMessageDialog(Client.this, "IP类型有误！");
-							return;
-						}
-
-						Client.HOST = ip;// 先解析并判断ip是否合法
-
-						try {
-							int port = Integer.parseInt(tfdPort.getText());
-							if (port < 0 || port > 65535) {
-								JOptionPane.showMessageDialog(Client.this, "端口范围有误！");
-								return;
-							}
-							Client.PORT = port;
-						} catch (NumberFormatException e1) {
-							JOptionPane.showMessageDialog(Client.this, "端口类型有误！");
-							return;
-						}
-
-						dlg.dispose();// 关闭这个界面
-					}
-				});
-				dlg.setVisible(true);// 显示出来
-			}
-		});
-
-		menuItemHelp.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JDialog dlg = new JDialog(Client.this);
-
-				dlg.setBounds(Client.this.getX() + 30, Client.this.getY() + 30, 400, 100);
-				dlg.setLayout(new FlowLayout());
-				dlg.add(new JLabel("版本所有@乱月"));
-				dlg.setVisible(true);
-			}
-		});
+		HelpItemListener hil = new HelpItemListener(Client.this);
+		menuItemHelp.addActionListener(hil);
 	}
 
 	@Override
@@ -268,9 +199,7 @@ public class Client extends JFrame implements ActionListener {
 				return;
 			}
 			// 获得btnCon按钮--获得源
-//			((JButton) (e.getSource())).setEnabled(false);
-			
-			
+			// ((JButton) (e.getSource())).setEnabled(false);
 
 		} else if (e.getActionCommand().equals("send")) {
 			String msgStr = tfdMsg.getText();
@@ -289,7 +218,7 @@ public class Client extends JFrame implements ActionListener {
 				SocketUtil.print(clientSocket, m);
 				if (mode == SystemConstants.MsgUserMode.SEND_ONE) {
 					thisMsg = "  我对【" + toUser + "】说: " + msgStr;
-					allMsg.append(thisMsg + SystemConstants.LINE_BREAK);
+					SwingUtil.printInTextArea(allMsg,thisMsg);
 				}
 				// 将发送消息的文本设为空
 				tfdMsg.setText("");
@@ -306,25 +235,27 @@ public class Client extends JFrame implements ActionListener {
 
 	}
 
-	private void setOffLineState() {
+	protected void setOffLineState() {
 		SocketUtil.closeSocket(clientSocket);
 		// 先把自己在线的菜单清空
 		lm.clear();
 		btnCon.setEnabled(true);
 		btnExit.setEnabled(false);
+		btnSend.setEnabled(false);
 		tfdUserName.setEditable(true);
 		tfdMsg.setEditable(false);
 		isOnline = false;
-		this.setTitle("闲聊 · 用户【" + userName + "】离线...");
+		this.setTitle("闲聊 · 离线...");
 	}
 
-	private void setOnLineState() {
+	protected void setOnLineState() {
 		btnCon.setEnabled(false);
 		btnExit.setEnabled(true);
 		btnSend.setEnabled(true);
 		tfdUserName.setEditable(false);
+		tfdMsg.setEditable(true);
 		isOnline = true;
-		this.setTitle("闲聊 · 用户【" + userName + "】在线...");
+		this.setTitle("闲聊 · 在线...");
 	}
 
 	// 向服务器发送退出消息
@@ -353,60 +284,11 @@ public class Client extends JFrame implements ActionListener {
 		}
 	}
 
-	class ClientThread extends Thread {
-		@Override
-		public void run() {
-			try {
-				Scanner sc = new Scanner(clientSocket.getInputStream());
-				while (sc.hasNextLine()) {
-					String str = sc.nextLine();
-					System.out.println(userName + ": " + str);
-					Message m = MessageUtil.toMessage(str);
-					String msgStr = "";
-					if (m.getType() == SystemConstants.MsgType.SYSTEM) {
-						if (m.getMode() == SystemConstants.MsgSysMode.NOTICE) {
-							msgStr = "【通知 】:" + m.getContent();
-						} else if (m.getMode() == SystemConstants.MsgSysMode.ONLINE) {
-							if (!lm.contains(m.getFromUser())) {
-								lm.addElement(m.getFromUser());// 用户上线--添加
-							}
-							msgStr = "【通知 】:用户【" + m.getFromUser() + "】上线了！";
-						} else if (m.getMode() == SystemConstants.MsgSysMode.OFFLINE) {
-							lm.removeElement(m.getFromUser());// 用户离线了--移除
-							msgStr = "【通知 】:用户【" + m.getFromUser() + "】下线了！";
-						} else if (m.getMode() == SystemConstants.MsgSysMode.USERS_SET) {
-							lm.clear();
-							lm.addElement("全部");
-							SwingUtil.addStr(lm, m.getUserList(), userName);						
-//							list = new JList<String>( m.getUserList().toArray(new String[10]));
-							list.setSelectedIndex(0);// 设置默认显示
-//							System.out.println(list.getSelectedValue());
-						} else if (m.getMode() == SystemConstants.MsgSysMode.SERVER_OFF) {
-							setOffLineState();
-						} else if (m.getMode() == SystemConstants.MsgSysMode.SERVER_ERROR) {
-							setOffLineState();
-							msgStr = "【错误 】:" + m.getContent();
-						}
-					} else if (m.getType() == SystemConstants.MsgType.USER) {
-						if (m.getMode() == SystemConstants.MsgUserMode.SEND_ONE) {
-							msgStr = "【" + m.getFromUser() + "】对我说: " + m.getContent();
-						} else if (m.getMode() == SystemConstants.MsgUserMode.SEND_ALL) {
-							msgStr = "【" + m.getFromUser() + "】说: " + m.getContent();
-						}
-					}
-					if (!StringUtil.isNullOrEmpty(msgStr))
-						allMsg.append(msgStr + SystemConstants.LINE_BREAK);
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-				logger.error("", e);
-			}
-		}
-	}
+	
 
 	public static void main(String[] args) {
 		// JFrame.setDefaultLookAndFeelDecorated(true);// 设置装饰
-		new Client();
+		Client.getInstance();
 	}
 
 }

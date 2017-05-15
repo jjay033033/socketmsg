@@ -3,6 +3,9 @@ package top.lmoon.util;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JTextArea;
+
+import top.lmoon.constants.SystemConstants;
 
 public class SwingUtil {
 
@@ -23,6 +26,14 @@ public class SwingUtil {
 //				System.out.println(lm.toString());
 			}	
 		}
+	}
+	
+	public static void printInTextArea(JTextArea ta,String content){
+		if(!StringUtil.isNullOrEmpty(content)){
+			ta.append(content + SystemConstants.LINE_BREAK);
+			ta.setCaretPosition(ta.getText().length());
+		}
+		
 	}
 
 }

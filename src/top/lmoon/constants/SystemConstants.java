@@ -73,5 +73,9 @@ public class SystemConstants {
 	public static class Error{
 		public static final String USERNAME = "用户名非法或已存在！";
 	}
+	
+	public static class SysMsg{
+		public static final String SERVER_OFF = "服务器已关闭！";
+	}
 
 }
