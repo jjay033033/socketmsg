@@ -68,7 +68,8 @@ public class ClientThread extends Thread {
 						break;
 					}
 				}
-				SwingUtil.printInTextArea(client.allMsg, msgStr );
+//				SwingUtil.printInTextArea(client.allMsg, msgStr );
+				SwingUtil.printInTextPane(client.msgPane, msgStr);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

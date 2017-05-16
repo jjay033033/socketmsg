@@ -12,10 +12,13 @@ import java.awt.event.WindowEvent;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.Socket;
+import java.net.URL;
 import java.net.UnknownHostException;
 
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -28,6 +31,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
@@ -55,7 +59,8 @@ public class Client extends JFrame implements ActionListener {
 	private JTextField tfdUserName;
 	protected JList<String> list;
 	protected DefaultListModel<String> lm;
-	protected JTextArea allMsg;
+//	protected JTextArea allMsg;
+	protected JTextPane msgPane;
 	private JTextField tfdMsg;
 	private JButton btnCon;
 	private JButton btnExit;
@@ -129,11 +134,20 @@ public class Client extends JFrame implements ActionListener {
 		cenP.add(js, BorderLayout.EAST);
 
 		// 聊天消息框
-		allMsg = new JTextArea();
-		allMsg.setLineWrap(true);
-		allMsg.setWrapStyleWord(true);
-		allMsg.setEditable(false);
-		cenP.add(new JScrollPane(allMsg), BorderLayout.CENTER);
+//		allMsg = new JTextArea();
+//		allMsg.setLineWrap(true);
+//		allMsg.setWrapStyleWord(true);
+//		allMsg.setEditable(false);
+//		cenP.add(new JScrollPane(allMsg), BorderLayout.CENTER);
+		msgPane = new JTextPane();
+		msgPane.setEditable(false);
+//		try {
+//			msgPane.insertIcon(new ImageIcon(new URL("https://gss0.baidu.com/94o3dSag_xI4khGko9WTAnF6hhy/zhidao/wh%3D800%2C450/sign=916ff37cdb1373f0f56a6797943f67cf/d009b3de9c82d1588c9332b68a0a19d8bc3e42a7.jpg")));
+//		} catch (MalformedURLException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+		cenP.add(new JScrollPane(msgPane),BorderLayout.CENTER);
 
 		// 消息发送面板
 		JPanel p3 = new JPanel();
@@ -226,7 +240,8 @@ public class Client extends JFrame implements ActionListener {
 				SocketUtil.print(clientSocket, m);
 				if (mode == SystemConstants.MsgUserMode.SEND_ONE) {
 					thisMsg = "  我对【" + toUser + "】说: " + msgStr;
-					SwingUtil.printInTextArea(allMsg, thisMsg);
+//					SwingUtil.printInTextArea(allMsg, thisMsg);
+					SwingUtil.printInTextPane(msgPane, thisMsg);
 				}
 				// 将发送消息的文本设为空
 				tfdMsg.setText("");
@@ -235,24 +250,24 @@ public class Client extends JFrame implements ActionListener {
 				e1.printStackTrace();
 				logger.error("", e1);
 			}
-		} else if (e.getActionCommand().equals("sendPic")) {
-			
-			try {
-				DataOutputStream dos = new DataOutputStream(clientSocket.getOutputStream());
-	            dos.writeUTF("先发来一个字符串，后面发一张图片");
-	            FileInputStream fis = new FileInputStream("res/1.png");
-	            byte[] buffer = new byte[1024];
-	            int len;
-	            while (((len = fis.read(buffer))>0))
-	                dos.write(buffer, 0, len);
-	            fis.close();
-	            dos.flush();
-	            dos.close();
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-				logger.error("", e1);
-			}
+//		} else if (e.getActionCommand().equals("sendPic")) {
+//			
+//			try {
+//				DataOutputStream dos = new DataOutputStream(clientSocket.getOutputStream());
+//	            dos.writeUTF("先发来一个字符串，后面发一张图片");
+//	            FileInputStream fis = new FileInputStream("res/1.png");
+//	            byte[] buffer = new byte[1024];
+//	            int len;
+//	            while (((len = fis.read(buffer))>0))
+//	                dos.write(buffer, 0, len);
+//	            fis.close();
+//	            dos.flush();
+//	            dos.close();
+//			} catch (Exception e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//				logger.error("", e1);
+//			}
 
 		} else if (e.getActionCommand().equals("exit")) {
 			sendOffLineMsg();
