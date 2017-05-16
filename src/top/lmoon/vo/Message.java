@@ -47,14 +47,14 @@ public class Message implements Serializable{
 		this.fromUser = fromUser;
 	}
 
-	public Message(int type, int mode, List userList) {
+	public Message(int type, int mode, List<String> userList) {
 		super();
 		this.type = type;
 		this.mode = mode;
 		this.userList = userList;
 	}
 
-	public Message(int type, int mode, String content, String fromUser, String toUser, List userList, Map dataMap) {
+	public Message(int type, int mode, String content, String fromUser, String toUser, List<String> userList, Map dataMap) {
 		super();
 		this.type = type;
 		this.mode = mode;
