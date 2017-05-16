@@ -5,18 +5,18 @@ package top.lmoon.client;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -60,6 +60,7 @@ public class Client extends JFrame implements ActionListener {
 	private JButton btnCon;
 	private JButton btnExit;
 	private JButton btnSend;
+	private JButton btnSendPic;
 
 	protected static String HOST = SystemConstants.IP_DEFAULT;// 自己机子，服务器的ip地址
 	protected static int PORT = SystemConstants.PORT_DEFAULT;// 服务器的端口号
@@ -67,11 +68,11 @@ public class Client extends JFrame implements ActionListener {
 	protected static String userName;
 
 	private static boolean isOnline = false;
-	
+
 	private static Client instance;
-	
-	public static Client getInstance(){
-		if(instance == null){
+
+	public static Client getInstance() {
+		if (instance == null) {
 			instance = new Client();
 		}
 		return instance;
@@ -80,7 +81,7 @@ public class Client extends JFrame implements ActionListener {
 	private Client() {
 
 		super("闲聊");
-		
+
 		// 菜单条
 		addJMenu();
 
@@ -117,7 +118,7 @@ public class Client extends JFrame implements ActionListener {
 		lm = new DefaultListModel<String>();
 		list = new JList<String>(lm);
 		// lm.addElement("全部");
-		// list.setSelectedIndex(0);// 设置默认显示		
+		// list.setSelectedIndex(0);// 设置默认显示
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);// 只能选中一行
 		list.setVisibleRowCount(2);
 		JScrollPane js = new JScrollPane(list);
@@ -138,16 +139,22 @@ public class Client extends JFrame implements ActionListener {
 		JPanel p3 = new JPanel();
 		JLabel jlb2 = new JLabel("消息:");
 		p3.add(jlb2);
-//		tfdMsg = new JTextArea(2, 20);
-//		tfdMsg.setLineWrap(true);
-//		tfdMsg.setWrapStyleWord(true);
+		// tfdMsg = new JTextArea(2, 20);
+		// tfdMsg.setLineWrap(true);
+		// tfdMsg.setWrapStyleWord(true);
 		tfdMsg = new JTextField(20);
 		p3.add(tfdMsg);
 		btnSend = new JButton("发送");
-//		btnSend.setEnabled(false);
+		// btnSend.setEnabled(false);
 		btnSend.setActionCommand("send");
 		btnSend.addActionListener(this);
 		p3.add(btnSend);
+
+		btnSendPic = new JButton("图片");
+		btnSendPic.setActionCommand("sendPic");
+		btnSendPic.addActionListener(this);
+		p3.add(btnSendPic);
+
 		this.getContentPane().add(p3, BorderLayout.SOUTH);
 
 		// *************************************************
@@ -162,7 +169,7 @@ public class Client extends JFrame implements ActionListener {
 			}
 		});
 
-		setBounds(300, 300, 400, 300);
+		setBounds(300, 300, 450, 300);
 		setVisible(true);
 		setOffLineState();
 	}
@@ -178,7 +185,7 @@ public class Client extends JFrame implements ActionListener {
 		JMenuItem menuItemHelp = new JMenuItem("帮助");
 		menu.add(menuItemSet);
 		menu.add(menuItemHelp);
-		
+
 		ConfigItemListener cil = new ConfigItemListener(Client.this);
 		menuItemSet.addActionListener(cil);
 
@@ -219,11 +226,29 @@ public class Client extends JFrame implements ActionListener {
 				SocketUtil.print(clientSocket, m);
 				if (mode == SystemConstants.MsgUserMode.SEND_ONE) {
 					thisMsg = "  我对【" + toUser + "】说: " + msgStr;
-					SwingUtil.printInTextArea(allMsg,thisMsg);
+					SwingUtil.printInTextArea(allMsg, thisMsg);
 				}
 				// 将发送消息的文本设为空
 				tfdMsg.setText("");
 			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+				logger.error("", e1);
+			}
+		} else if (e.getActionCommand().equals("sendPic")) {
+			
+			try {
+				DataOutputStream dos = new DataOutputStream(clientSocket.getOutputStream());
+	            dos.writeUTF("先发来一个字符串，后面发一张图片");
+	            FileInputStream fis = new FileInputStream("res/1.png");
+	            byte[] buffer = new byte[1024];
+	            int len;
+	            while (((len = fis.read(buffer))>0))
+	                dos.write(buffer, 0, len);
+	            fis.close();
+	            dos.flush();
+	            dos.close();
+			} catch (Exception e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 				logger.error("", e1);
@@ -284,8 +309,6 @@ public class Client extends JFrame implements ActionListener {
 			logger.error("", e);
 		}
 	}
-
-	
 
 	public static void main(String[] args) {
 		// JFrame.setDefaultLookAndFeelDecorated(true);// 设置装饰
