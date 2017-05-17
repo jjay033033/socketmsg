@@ -8,11 +8,12 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import net.sf.json.JSONObject;
+import top.lmoon.constants.ResConstants;
 import top.lmoon.vo.Message;
 
 public class MessageUtil {
 
-	private static final Logger logger = Logger.getLogger(MessageUtil.class);
+	private static final Logger logger = Logger.getLogger(ResConstants.LOG_COMMON);
 	
 	public static Message toMessage(String str){
 		Message m  = new Message();

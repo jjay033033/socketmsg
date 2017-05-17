@@ -5,20 +5,24 @@ import java.util.Scanner;
 
 import org.apache.log4j.Logger;
 
+import top.lmoon.constants.ResConstants;
 import top.lmoon.constants.SystemConstants;
 import top.lmoon.util.MessageUtil;
+import top.lmoon.util.ScannerUtil;
+import top.lmoon.util.SocketUtil;
 import top.lmoon.util.SwingUtil;
 import top.lmoon.vo.Message;
 
 public class ClientThread extends Thread {
 
-	private static final Logger logger = Logger.getLogger(ClientThread.class);
+	private static final Logger logger = Logger.getLogger(ResConstants.LOG_CLIENT);
 
 	@Override
 	public void run() {
+		Scanner sc = null;
 		try {
 			Client client = Client.getInstance();
-			Scanner sc = new Scanner(Client.clientSocket.getInputStream());
+			sc = new Scanner(Client.clientSocket.getInputStream());
 			while (sc.hasNextLine()) {
 				String str = sc.nextLine();
 				System.out.println(Client.userName + ": " + str);
@@ -74,6 +78,9 @@ public class ClientThread extends Thread {
 		} catch (IOException e) {
 			e.printStackTrace();
 			logger.error("", e);
+		}finally {
+//			ScannerUtil.closeScanner(sc);
+//			SocketUtil.closeSocket(Client.clientSocket);
 		}
 	}
 }

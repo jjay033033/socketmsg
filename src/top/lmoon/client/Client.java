@@ -38,6 +38,7 @@ import javax.swing.border.TitledBorder;
 
 import org.apache.log4j.Logger;
 
+import top.lmoon.constants.ResConstants;
 import top.lmoon.constants.SystemConstants;
 import top.lmoon.util.SocketUtil;
 import top.lmoon.util.StringUtil;
@@ -54,7 +55,7 @@ public class Client extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = -8859859823038390137L;
 
-	private static final Logger logger = Logger.getLogger(Client.class);
+	private static final Logger logger = Logger.getLogger(ResConstants.LOG_CLIENT);
 
 	private JTextField tfdUserName;
 	protected JList<String> list;

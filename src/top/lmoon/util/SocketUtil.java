@@ -6,11 +6,12 @@ import java.net.Socket;
 
 import org.apache.log4j.Logger;
 
+import top.lmoon.constants.ResConstants;
 import top.lmoon.vo.Message;
 
 public class SocketUtil {
 
-	private static final Logger logger = Logger.getLogger(SocketUtil.class);
+	private static final Logger logger = Logger.getLogger(ResConstants.LOG_COMMON);
 
 	public static void print(Socket s, String str) throws IOException {
 		PrintWriter pw = new PrintWriter(s.getOutputStream(), false);// 加true为自动刷新

@@ -11,11 +11,12 @@ import javax.swing.text.StyledDocument;
 
 import org.apache.log4j.Logger;
 
+import top.lmoon.constants.ResConstants;
 import top.lmoon.constants.SystemConstants;
 
 public class SwingUtil {
 	
-	private static final Logger logger = Logger.getLogger(SwingUtil.class);
+	private static final Logger logger = Logger.getLogger(ResConstants.LOG_COMMON);
 
 	public static boolean containsStr(DefaultListModel<String> lm, String str) {
 		for (int i = 0; i < lm.getSize(); i++) {
@@ -49,6 +50,7 @@ public class SwingUtil {
 			StyledDocument doc = tp.getStyledDocument();
 			try {
 				doc.insertString(doc.getLength(), content+ SystemConstants.LINE_BREAK, new SimpleAttributeSet());
+				tp.setCaretPosition(tp.getDocument().getLength());
 			} catch (BadLocationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

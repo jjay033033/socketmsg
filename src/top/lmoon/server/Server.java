@@ -36,6 +36,7 @@ import javax.swing.border.TitledBorder;
 
 import org.apache.log4j.Logger;
 
+import top.lmoon.constants.ResConstants;
 import top.lmoon.constants.SystemConstants;
 import top.lmoon.util.MessageUtil;
 import top.lmoon.util.SocketUtil;
@@ -51,7 +52,7 @@ public class Server extends JFrame {
 
 	private static final long serialVersionUID = -3257413069018446440L;
 
-	private static final Logger logger = Logger.getLogger(Server.class);
+	private static final Logger logger = Logger.getLogger(ResConstants.LOG_SERVER);
 
 	private JList<String> list;
 	protected JTextArea area;

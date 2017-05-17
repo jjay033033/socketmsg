@@ -10,6 +10,7 @@ import javax.swing.JTextArea;
 
 import org.apache.log4j.Logger;
 
+import top.lmoon.constants.ResConstants;
 import top.lmoon.constants.SystemConstants;
 import top.lmoon.util.MessageUtil;
 import top.lmoon.util.ScannerUtil;
@@ -19,7 +20,7 @@ import top.lmoon.vo.Message;
 
 public class ClientThread extends Thread {
 
-	private static final Logger logger = Logger.getLogger(ClientThread.class);
+	private static final Logger logger = Logger.getLogger(ResConstants.LOG_SERVER);
 
 	private Socket socketClient;
 
