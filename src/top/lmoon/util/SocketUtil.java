@@ -11,7 +11,7 @@ import top.lmoon.vo.Message;
 
 public class SocketUtil {
 
-	private static final Logger logger = Logger.getLogger(ResConstants.LOG_COMMON);
+	private static final Logger logger = Logger.getLogger(SocketUtil.class);
 
 	public static void print(Socket s, String str) throws IOException {
 		PrintWriter pw = new PrintWriter(s.getOutputStream(), false);// 加true为自动刷新

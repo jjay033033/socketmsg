@@ -15,7 +15,7 @@ import top.lmoon.vo.Message;
 
 public class ClientThread extends Thread {
 
-	private static final Logger logger = Logger.getLogger(ResConstants.LOG_CLIENT);
+	private static final Logger logger = Logger.getLogger(ClientThread.class);
 
 	@Override
 	public void run() {

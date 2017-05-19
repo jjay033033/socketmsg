@@ -21,7 +21,7 @@ import top.lmoon.vo.Message;
 
 public class ServerThread extends Thread {
 	
-	private static final Logger logger = Logger.getLogger("server");
+	private static final Logger logger = Logger.getLogger(ServerThread.class);
 	
 	private ServerSocket serverSocket;
 

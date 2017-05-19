@@ -13,7 +13,7 @@ import top.lmoon.vo.Message;
 
 public class MessageUtil {
 
-	private static final Logger logger = Logger.getLogger(ResConstants.LOG_COMMON);
+	private static final Logger logger = Logger.getLogger(MessageUtil.class);
 	
 	public static Message toMessage(String str){
 		Message m  = new Message();

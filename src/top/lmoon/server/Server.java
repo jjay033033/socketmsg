@@ -52,7 +52,7 @@ public class Server extends JFrame {
 
 	private static final long serialVersionUID = -3257413069018446440L;
 
-	private static final Logger logger = Logger.getLogger(ResConstants.LOG_SERVER);
+	private static final Logger logger = Logger.getLogger(Server.class);
 
 	private JList<String> list;
 	protected JTextArea area;

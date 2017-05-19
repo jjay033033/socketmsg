@@ -55,7 +55,7 @@ public class Client extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = -8859859823038390137L;
 
-	private static final Logger logger = Logger.getLogger(ResConstants.LOG_CLIENT);
+	private static final Logger logger = Logger.getLogger(Client.class);
 
 	private JTextField tfdUserName;
 	protected JList<String> list;

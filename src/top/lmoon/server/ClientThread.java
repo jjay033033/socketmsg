@@ -20,7 +20,7 @@ import top.lmoon.vo.Message;
 
 public class ClientThread extends Thread {
 
-	private static final Logger logger = Logger.getLogger(ResConstants.LOG_SERVER);
+	private static final Logger logger = Logger.getLogger(ClientThread.class);
 
 	private Socket socketClient;
 

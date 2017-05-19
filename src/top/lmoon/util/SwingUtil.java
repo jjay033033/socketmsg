@@ -16,7 +16,7 @@ import top.lmoon.constants.SystemConstants;
 
 public class SwingUtil {
 	
-	private static final Logger logger = Logger.getLogger(ResConstants.LOG_COMMON);
+	private static final Logger logger = Logger.getLogger(SwingUtil.class);
 
 	public static boolean containsStr(DefaultListModel<String> lm, String str) {
 		for (int i = 0; i < lm.getSize(); i++) {
